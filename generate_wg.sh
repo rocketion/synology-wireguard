@@ -3,14 +3,16 @@
 # 用法: ./generate_wg.sh -c <客户端名称>
 #       ./generate_wg.sh -d <客户端名称>
 # 说明: 服务端私钥/公钥已内置在脚本中；客户端密钥由 wg 生成。
-# 关键字段说明:
-# - server_private_key/server_public_key: 群晖端 WireGuard 服务端密钥对，必须匹配。
-# - client_endpoint: 客户端访问入口（公网IP/域名:端口），需替换为真实地址，端口与服务端监听端口一致。
-#
-# 用户需配置的三项（放在最上方便于修改）
-server_private_key="xxx"
+# 用户可配置项（集中在最前，方便修改）
+server_private_key="xxx" # 服务端密钥对生成(含输出): priv=$(wg genkey); pub=$(printf '%s' "$priv" | wg pubkey); echo "priv=$priv"; echo "pub=$pub"
 server_public_key="xxx"
-client_endpoint="xxx:51820"
+client_endpoint="xxx:51820" # 客户端访问入口（公网IP/域名:端口），需替换为真实地址
+server_address="10.9.0.1/24" # 服务端虚拟网卡地址
+server_listen_port="51820" # 服务端监听端口
+client_allowed_ips="192.168.8.0/24, 10.9.0.0/24" # 客户端允许访问网段
+client_keepalive="25" # NAT 环境建议保活秒数
+client_ip_prefix="10.9.0." # 客户端内网 IP 前缀
+client_ip_start="2" # 客户端起始 IP 尾号
 set -euo pipefail
 
 usage() {
@@ -47,14 +49,6 @@ if [[ -z "$client_name" || -z "$action" ]]; then
   usage
   exit 1
 fi
-
-# 可根据需要修改以下默认配置
-server_address="10.9.0.1/24"
-server_listen_port="51820"
-client_allowed_ips="192.168.8.0/24, 10.9.0.0/24"
-client_keepalive="25"
-client_ip_prefix="10.9.0."
-client_ip_start="2"
 
 server_conf="ds_wg.conf"
 client_conf="${client_name}.conf"

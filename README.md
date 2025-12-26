@@ -72,15 +72,9 @@ sudo wg-quick down ds_wg
 
 将生成的 `<name>.conf` 发送到对应客户端导入即可。客户端配置中的 `Endpoint`、`AllowedIPs`、`PersistentKeepalive` 等字段可以在脚本顶部默认配置处调整。
 
-Endpoint 说明（必改）
-- 当前脚本默认值为 `xxx:51820`，只是占位符
-- 需要替换为你的真实公网地址或 DDNS 域名，例如：`example.com:51820`
-- 端口需与群晖 WireGuard 监听端口一致（脚本默认 `51820`）
-
-服务端密钥说明（必改）
-- `server_private_key`：群晖服务端私钥，只能放在服务端配置中，不能泄露
-- `server_public_key`：服务端公钥，会写入客户端配置的 `[Peer]` 块
-- 两者必须是同一对密钥；若不匹配，客户端无法握手
+脚本顶部可配置项说明
+- `server_private_key`/`server_public_key`：服务端密钥对，必须成对；私钥只放服务端，公钥写入客户端 `[Peer]`
+- `client_endpoint`：客户端入口（公网IP/域名:端口），占位值需替换为真实地址，端口与服务端监听端口一致
 
 ## 配置变更后的处理
 
@@ -105,5 +99,4 @@ sudo wg-quick --help | grep strip
 
 ## 注意事项
 
-- 脚本内置服务端私钥/公钥，如果需要更换密钥，请直接修改 `generate_wg.sh` 中的 `server_private_key` 与 `server_public_key`。
 - 请妥善保管服务端私钥，避免泄露。
